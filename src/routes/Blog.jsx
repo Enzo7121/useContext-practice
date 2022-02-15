@@ -9,6 +9,14 @@ function Blog() {
 
   const [searchParams, setSearchParams] = useSearchParams();
 
+  const filterByURL = (item) => {
+    const filter = searchParams.get("filter");
+    if (!filter) return true;
+
+    const title = item.title.toLowerCase();
+    return title.startsWith(filter.toLowerCase());
+  };
+
   const handleChange = (e) => {
     const filter = e.target.value;
 
@@ -27,8 +35,6 @@ function Blog() {
     return <h5>{error}</h5>;
   }
 
-  console.log(data);
-
   return (
     <div>
       <h1>Blog</h1>
@@ -38,21 +44,13 @@ function Blog() {
         value={searchParams.get("filter") || ""}
         onChange={handleChange}
       />
-      {data
-        .filter((item) => {
-          const filter = searchParams.get("filter");
-          if (!filter) return true;
-
-          const title = item.title.toLowerCase();
-          return title.startsWith(filter.toLowerCase());
-        })
-        .map((item) => (
-          <h4 key={item.id}>
-            <Link to={`/blog/${item.id}`}>
-              {item.id} - {item.title}
-            </Link>
-          </h4>
-        ))}
+      {data.filter(filterByURL).map((item) => (
+        <h4 key={item.id}>
+          <Link to={`/blog/${item.id}`}>
+            {item.id} - {item.title}
+          </Link>
+        </h4>
+      ))}
     </div>
   );
 }
